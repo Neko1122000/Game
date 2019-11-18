@@ -1,5 +1,8 @@
 package static_ob;
 
+import EnemyType.Enemy;
+import Shot.Bullet;
+
 public class MachineGunTower extends Tower{
 	public MachineGunTower(){
 		super(HIGH_SPEED, NARROW_RANGE, NORMAL_DAMAGE);
@@ -14,6 +17,9 @@ public class MachineGunTower extends Tower{
 	
 		this.setX(x);
 		this.setY(y);
-		this.bullet.setIcon("298");
+	}
+	
+	public void shot(Enemy e) {
+		bullet.add(new Bullet(e, this.getPos(), "296"));
 	}
 }

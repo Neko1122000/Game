@@ -1,10 +1,10 @@
 package EnemyType;
 
-import java.awt.Point;
+import path.Road;
 
 public class TankerEnemy extends Enemy{
 	
-	public TankerEnemy() {
+	public TankerEnemy(Road r) {
 		this.setArmor(HIGH_ARMOR);
 		this.setBlood(HIGH_BLOOD);
 		this.setMoveSpeed(LOW_MOVESPEED);
@@ -12,14 +12,10 @@ public class TankerEnemy extends Enemy{
 		
 		try {
 		  	  icon = tk.getImage(s + Integer.toString(269) + str);
-		  	  } catch (Exception IO) {}
+		} catch (Exception IO) {}
 		     
-		     object = new Point(0*64, 5*64);
+		this.road = r;
+		this.object.setLocation(this.road.start().x*64, this.road.start().y*64);
 	}
 	
-	@Override 
-	public void next(){
-		this.setX(this.getX() + 1);
-		this.setY(this.getY() + 0);
-	}
 }

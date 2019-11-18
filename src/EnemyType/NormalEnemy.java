@@ -2,9 +2,11 @@ package EnemyType;
 
 import java.awt.*;
 
+import path.Road;
+
 public class NormalEnemy extends Enemy{
 	
-	public NormalEnemy(){
+	public NormalEnemy(Road x){
 		this.setArmor(BASIC_ARMOR);
 		this.setBlood(BASIC_BLOOD);
 		this.setMoveSpeed(BASIC_MOVESPEED);
@@ -12,16 +14,10 @@ public class NormalEnemy extends Enemy{
 		
 	  	try {
 	  	  icon = tk.getImage(s + Integer.toString(247) + str);
-	  	  } catch (Exception IO) {}
-	     
-	     object = new Point(0*64, 5*64);
-	      
+	  	} catch (Exception IO) {}
+	  	
+	  	this.road = x;
+	  	this.object.setLocation(this.road.start().x*64, this.road.start().y*64);
 	  }
-
-	@Override 
-	public void next(){
-		this.setX(this.getX() + 2);
-		this.setY(this.getY() + 0);
-	}
 	
 }

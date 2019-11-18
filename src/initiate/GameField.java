@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.*;
 
 import EnemyType.*;
+import Shot.Bullet;
 import path.Road;
 import static_ob.*;
 
@@ -27,11 +28,12 @@ public class GameField extends JPanel{
 	private Point mouse = new Point(0, 0);
 	private int timer = 1;
 	private int cash = 500;
-	private int life = 1;
+	private int life = 5;
 	private boolean flag = true;
+	private int level = 1, countEnemy = 5;
 	
 	private Road road = new Road();
-	private boolean[][] map;
+	private int [][] map;
 	private ArrayList <Enemy> enemy = new ArrayList <Enemy>();
 	private ArrayList <Tower> tower = new ArrayList <Tower>();
 	
@@ -49,12 +51,17 @@ public class GameField extends JPanel{
 			  //Display a message if something goes wrong
 			  JOptionPane.showMessageDialog( null, e.toString() );
 		}
+		init();
+	}
 		
+		
+	
+	private void init(){
 		objects = new Point[12][12];
-		map = new boolean[12][10];
+		map = new int[12][10];
 		for (int i = 0; i < 12; ++i) {
 			for (int j = 0; j < 10; ++j) {
-				map[i][j] = true;
+				map[i][j] = 1;
 			}
 		}
 		
@@ -65,14 +72,13 @@ public class GameField extends JPanel{
 		}
 		
 		for (int i = 0; i < road.size(); ++i) 
-			map[road.getX(i)][road.getY(i)] = false;
-		enemy.add(new NormalEnemy());
+			map[road.getX(i)][road.getY(i)] = 0;
 	}
 	
 	public boolean getPoint(Point m){
 		int i = m.x/64;
 		int j = m.y/64;
-		return (i < 12 && j < 10 && map[i][j]);
+		return (i < 12 && j < 10 && map[i][j] == 1);
 	}
 	
 	public Point getMouse(){
@@ -88,6 +94,7 @@ public class GameField extends JPanel{
 		int i = m.x/64;
 		int j = m.y/64;
 		if (cash < 100) return;
+		map[i][j] = 2;
 		switch (k) {
 			case 0: {
 				tower.add(new NormalTower(i*64, j*64));
@@ -108,42 +115,42 @@ public class GameField extends JPanel{
 	public void deleteTower(Point m){
 		int i = m.x/64;
 		int j = m.y/64;
-		if (!map[i][j] || cash < 100) return;
+		if (map[i][j] != 1 || cash < 100) return;
 		for (Tower t: tower){
 			if (t.getX()/64 == i && t.getY()/64 == j) {
 				tower.remove(t);
+				map[i][j] = 1;
 				break;
 			}
 		}
 		cash -= 100;
 	}
 	
-	public void paintComponent(Graphics g){
-		super.paintComponent(g); 
-	    
-	    for (int i = 0; i < 12; ++i) {
-	      for (int j = 0; j < 10; ++j) {
-	    	  if (map[i][j]){
-	    		  g.drawImage(land, objects[i][j].x, objects[i][j].y, 64, 64, null);
-	    	  }
-	    	  else {
-	    		  if (road.startPointX() == i && road.startPointY() == j) 
-	    			  g.drawImage(start, i*64, j*64, 64, 64, null);
-	    		  else if (road.end().x == i && road.end().y == j) 
-	    			  g.drawImage(en, i*64, j*64, 64, 64, null);
-	    		  else g.drawImage(path, objects[i][j].x, objects[i][j].y, 64, 64, null);
-	    	  } 
-	      }  	  
-	    }
-	    for (int i = 0; i < 4; ++i){
-	    	g.drawImage(gun[i], 12*64, i*64, 64, 64, null);
-	    	g.drawString("  100$", 13*64, i*64 + 32);
-	    }
-	    g.drawImage(tk.getImage(s + "300" + str), 13*64+35, 5*64+32, 32, 32, null);
-	}
-	
 	public void paint (Graphics g){
 		super.paint(g);
+		
+		for (int i = 0; i < 12; ++i) {
+		      for (int j = 0; j < 10; ++j) {
+		    	  if (map[i][j] != 0){
+		    		  g.drawImage(land, objects[i][j].x, objects[i][j].y, 64, 64, null);
+		    	  }
+		    	  else {
+		    		  if (road.startPointX() == i && road.startPointY() == j) 
+		    			  g.drawImage(start, i*64, j*64, 64, 64, null);
+		    		  else if (road.end().x == i && road.end().y == j) 
+		    			  g.drawImage(en, i*64, j*64, 64, 64, null);
+		    		  else g.drawImage(path, objects[i][j].x, objects[i][j].y, 64, 64, null);
+		    	  } 
+		      }  	  
+		    }
+		    for (int i = 0; i < 4; ++i){
+		    	g.drawImage(gun[i], 12*64, i*64, 64, 64, null);
+		    	g.drawString("  100$", 13*64, i*64 + 32);
+		    }
+		    g.drawImage(tk.getImage(s + "300" + str), 13*64+35, 5*64+32, 32, 32, null);
+		    g.setFont(new Font("TimesRoman", Font.PLAIN, 25));
+		    g.drawString("LEVEL " + Integer.toString(level),13*64, 7*64);
+		    
 		if (life == 0) {
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
 			g.drawString("GAME OVER", 4*64, 5*64);
@@ -156,20 +163,51 @@ public class GameField extends JPanel{
 						  life = 5;
 						  tower.clear();
 						  enemy.clear();
-						  cash = 500;
 						  road = new Road();
+						  cash = 500;
 						  flag = true;
+						  level = 1;
+						  countEnemy = 5;
 						  remove(b);
+						  init();
 				     }  
 				 }); 
 				add(b);
 			}
 			return;
+		} else if (countEnemy == 0 && enemy.size() == 0) {
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
+			g.drawString("NEXT LEVEL", 4*64, 5*64);
+			if (flag) {
+				flag = false;
+				Button b=new Button("PLAY");  
+				b.setBounds(325, 325, 100, 50);  
+				b.addActionListener(new ActionListener(){  
+					public void actionPerformed(ActionEvent e){  
+						  tower.clear();
+						  enemy.clear();
+						  road = new Road();
+						  ++level;
+						  countEnemy = 5*level;
+						  flag = true;
+						  remove(b);
+						  init();
+				     }  
+				 }); 
+				add(b);
+			}
 		}
 	 
 		++timer;
 	    for (Enemy i: enemy) {
-	    	g.drawImage(i.getIcon(), i.getX(), i.getY(), 64, 64, null);
+	    	if (!i.getFlag())
+	    		g.drawImage(i.getIcon(), i.getX(), i.getY(), 64, 64, null);
+	    	else {
+	    		AffineTransform tx = AffineTransform.getRotateInstance(Math.PI/2.0, 32, 32);
+		    	AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+		    	g.drawImage(op.filter(toBufferedImage(i.getIcon()), null), 
+		    			i.getX(), i.getY(), null);
+	    	}
 	    	i.next();
 	    }
 	    for (int i = 0; i < enemy.size(); ++i){
@@ -178,6 +216,19 @@ public class GameField extends JPanel{
 	    	if (enemy.get(i).hitTarget(road.end()) || enemy.get(i).isDead()) {
 	    		enemy.remove(i);
 	    		--i;
+	    	}
+	    }
+	    for (Tower t: tower){
+	    	for (int i = 0; i < t.getBullet().size(); ++i){
+	    		if (t.getBullet().get(i).out()) {
+	    			t.getBullet().remove(i);
+	    			--i;
+	    		} else if (t.getBullet().get(i).hit()) {
+	    			Enemy e = t.getBullet().get(i).getEnemy();
+	    			e.setBlood(e.getBlood()+e.getArmor() - t.getDamage());
+	    			t.getBullet().remove(i);
+	    			--i;
+	    		}
 	    	}
 	    }
 	    for (Tower t: tower){
@@ -199,16 +250,24 @@ public class GameField extends JPanel{
 	    	Point back = new Point(0, 0);
 	    	if (timer % t.getShotSpeed() == 0) {
 	    		if (e != null) {
-	    			g.drawImage(op.filter(toBufferedImage(t.getBullet()), null), 
-	    					x, y, 64, 64, null);
+	    			t.shot(e);
 	    			back.x = 5; back.y = 5; 
-	    			e.setBlood(e.getBlood() + e.getArmor() - t.getDamage());
 	    		}
 	    	}
-
 	    	// Drawing the rotated image at the required drawing location
 	    	g.drawImage(op.filter(toBufferedImage(t.getIcon()), null), 
 	    			drawLocationX - back.x, drawLocationY - back.y, null);
+	    	
+	    	for (Bullet b: t.getBullet()){
+	    		AffineTransform affineTransform = new AffineTransform();
+	    	    affineTransform.rotate(b.getAngle(), 32, 32);
+
+	    	    // Now lets make that transform an operation, and we use it.
+	    	    AffineTransformOp opp = new AffineTransformOp(affineTransform, AffineTransformOp.TYPE_BILINEAR); 
+	    		g.drawImage(opp.filter(toBufferedImage(b.getIcon()), null), 
+		    			b.getPoint().x, b.getPoint().y, null);
+	    		b.next();
+	    	}
 	    	
 	    }
 	    
@@ -216,26 +275,27 @@ public class GameField extends JPanel{
 	    g.drawString(Integer.toString(cash) + "$",13*64, 5*64);
 	    g.drawString(Integer.toString(life) + " x ", 13*64, 6*64);
 	    
-	    if (timer % 100 == 0) {
+	    if (timer % 100 == 0 && countEnemy > 0) {
     		int type = (int) (Math.random()*4);
     		switch (type){
 	    		case 0: {
-	    			enemy.add(new NormalEnemy());
+	    			enemy.add(new NormalEnemy(road));
 	    			break;
 	    		}
 	    		case 1: {
-	    			enemy.add(new SmallerEnemy());
+	    			enemy.add(new SmallerEnemy(road));
 	    			break;
 	    		}
 	    		case 2: {
-	    			enemy.add(new TankerEnemy());
+	    			enemy.add(new TankerEnemy(road));
 	    			break;
 	    		}
 	    		case 3: {
-	    			enemy.add(new BossEnemy());
+	    			enemy.add(new BossEnemy(road));
 	    			break;
 	    		}
     		}
+    		--countEnemy;
     	}
     	if (timer == limitTimer) timer = 1;
 	  }

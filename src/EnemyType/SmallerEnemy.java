@@ -1,9 +1,9 @@
 package EnemyType;
 
-import java.awt.Point;
+import path.Road;
 
 public class SmallerEnemy extends Enemy{
-	public SmallerEnemy() {
+	public SmallerEnemy(Road r) {
 		this.setArmor(LOW_ARMOR);
 		this.setBlood(LOW_BLOOD);
 		this.setMoveSpeed(HIGH_MOVESPEED);
@@ -11,14 +11,10 @@ public class SmallerEnemy extends Enemy{
 		
 		try {
 		  	  icon = tk.getImage(s + Integer.toString(248) + str);
-		  	  } catch (Exception IO) {}
-		     
-		     object = new Point(0*64, 5*64);
+		} catch (Exception IO) {}
+		
+		this.road = r;
+		this.object.setLocation(this.road.start().x*64, this.road.start().y*64);
 	}
 	
-	@Override 
-	public void next(){
-		this.setX(this.getX() + 4);
-		this.setY(this.getY() + 0);
-	}
 }

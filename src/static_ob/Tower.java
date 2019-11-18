@@ -32,12 +32,11 @@ public class Tower {
 	protected Toolkit tk   = Toolkit.getDefaultToolkit(); 
 	protected Image   icon;
 	
-	protected Bullet bullet = new Bullet();
+	protected ArrayList <Bullet> bullet = new ArrayList <Bullet>();
 	
 	public Tower(int x, int y){
 		pos.x = x;
 		pos.y = y;
-		bullet.setPoint(pos);
 	}
 	
 	public Tower(int s, int r, int d) {
@@ -50,6 +49,8 @@ public class Tower {
 	public int getY() {return pos.y;}
 	public void setY(int x) {this.pos.y = x;}
 	
+	public Point getPos() {return this.pos;}
+	
 	public int getShotSpeed() {return this.shotSpeed; }
 	public void setShotSpeed(int s) {this.shotSpeed = s; }
 	
@@ -60,6 +61,11 @@ public class Tower {
 	public void setDamage(int s) {this.damage = s;}
 
 	public Image getIcon() {return this.icon;}
+	public void setBullet(String s){
+		for (Bullet b: this.bullet){
+			b.setIcon(s);
+		}
+	}
 	
 	public Enemy choseEnemy(List <Enemy> e) {
 		if (e.size() == 0) return null;
@@ -71,5 +77,9 @@ public class Tower {
 		return null;
 		//return e.get(0);
 	}
-	public Image getBullet() {return this.bullet.getIcon();}
+	public ArrayList <Bullet> getBullet() {return this.bullet;}
+	
+	public void shot(Enemy e) {
+		bullet.add(new Bullet(e, this.getPos(), "297"));
+	}
 }

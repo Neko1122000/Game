@@ -1,5 +1,8 @@
 package static_ob;
 
+import EnemyType.Enemy;
+import Shot.Bullet;
+
 public class NormalTower extends Tower{
 	public NormalTower(){
 		super(NORMAL_SPEED, NORMAL_RANGE, NORMAL_DAMAGE);
@@ -16,7 +19,10 @@ public class NormalTower extends Tower{
 		try {
 			icon = tk.getImage(s + Integer.toString(291) + str);
 		} catch (Exception IO) {}
-		this.bullet.setIcon("296");
+	}
+	
+	public void shot(Enemy e) {
+		bullet.add(new Bullet(e, this.getPos(), "298"));
 	}
 	
 }
